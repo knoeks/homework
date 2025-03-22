@@ -2,10 +2,7 @@ package lt.bite.povilas.homework.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +22,7 @@ import java.util.Set;
 public class User implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Setter(AccessLevel.NONE)
   private Long id;
 
   @Column(nullable = false, unique = true, length = 100)
@@ -33,7 +31,7 @@ public class User implements UserDetails {
   @Column(nullable = false, unique = true, length = 128)
   private String password;
 
-  @Column(nullable = false, name = "registered_at")
+  @Column(nullable = false, updatable = false, name = "registered_at")
   private LocalDateTime registeredAt;
 
   @ManyToMany(fetch = FetchType.EAGER)
