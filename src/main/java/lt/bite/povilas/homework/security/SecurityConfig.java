@@ -47,26 +47,7 @@ public class SecurityConfig {
   // TODO: secure needed endpoints
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-            .authorizeHttpRequests((authorize) ->
-                    authorize
-                            .requestMatchers("/", "/error", "/csrf", "/swagger-ui.html", "/swagger-ui/**",
-                                    "/v3/api-docs", "/v3/api-docs/**").permitAll()
-                            .anyRequest().authenticated()
-            )
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(Customizer.withDefaults())
-            .oauth2ResourceServer(oauth2 -> oauth2
-                    .jwt(jwt -> jwt
-                            .decoder(jwtDecoder())
-                            .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                    )
-            )
-            .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .exceptionHandling((exceptions) -> exceptions.
-                    authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
-                    .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
-            );
+    http.authorizeHttpRequests((authorize) -> authorize.requestMatchers("/", "/error", "/csrf", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll().anyRequest().authenticated()).csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults()).oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder()).jwtAuthenticationConverter(jwtAuthenticationConverter()))).sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint()).accessDeniedHandler(new BearerTokenAccessDeniedHandler())).headers(headers -> headers.frameOptions(frame -> frame.disable()));
     return http.build();
 
 
@@ -102,18 +83,6 @@ public class SecurityConfig {
 
   @Bean
   public OpenAPI customOpenAPI() {
-    return new OpenAPI()
-            .info(new Info()
-                    .title("Eventify API")
-                    .version("0.1")
-                    .description("API for managing events and registrations"))
-            .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-            .components(new Components()
-                    .addSecuritySchemes("bearerAuth", new SecurityScheme()
-                            .type(SecurityScheme.Type.HTTP)
-                            .scheme("bearer")
-                            .bearerFormat("JWT")
-                            .name("Authorization")
-                            .in(SecurityScheme.In.HEADER)));
+    return new OpenAPI().info(new Info().title("Bite Homework API").version("0.1").description("simple CRUD for posting and getting tasks")).addSecurityItem(new SecurityRequirement().addList("bearerAuth")).components(new Components().addSecuritySchemes("bearerAuth", new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT").name("Authorization").in(SecurityScheme.In.HEADER)));
   }
 }
