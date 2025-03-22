@@ -58,7 +58,8 @@ public class User implements UserDetails {
     return roles.stream().map(item -> new SimpleGrantedAuthority("ROLE_" + item.getName())).toList();
   }
 
-  @JsonIgnore
+
+  // FIXME: shouldn't be printed the second time. fix with DTO
   @Override
   public String getUsername() {
     return email;
