@@ -14,10 +14,12 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,7 +49,32 @@ public class SecurityConfig {
   // TODO: secure needed endpoints
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.authorizeHttpRequests((authorize) -> authorize.requestMatchers("/", "/error", "/csrf", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll().anyRequest().authenticated()).csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults()).oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder()).jwtAuthenticationConverter(jwtAuthenticationConverter()))).sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint()).accessDeniedHandler(new BearerTokenAccessDeniedHandler())).headers(headers -> headers.frameOptions(frame -> frame.disable()));
+    http
+            .authorizeHttpRequests((authorize) ->
+                    authorize
+                            .requestMatchers("/h2-console/**").permitAll()
+                            .requestMatchers("/", "/error", "/csrf", "/swagger-ui.html", "/swagger-ui/**",
+                                    "/v3/api-docs", "/v3/api-docs/**").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+
+                            .anyRequest().authenticated()
+            )
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(Customizer.withDefaults())
+            .oauth2ResourceServer(oauth2 -> oauth2
+                    .jwt(jwt -> jwt
+                            .decoder(jwtDecoder())
+                            .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                    )
+            )
+            .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling((exceptions) -> exceptions.
+                    authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+                    .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
+            )
+            .headers(headers -> headers
+                    .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+            );
     return http.build();
 
 
@@ -83,6 +110,18 @@ public class SecurityConfig {
 
   @Bean
   public OpenAPI customOpenAPI() {
-    return new OpenAPI().info(new Info().title("Bite Homework API").version("0.1").description("simple CRUD for posting and getting tasks")).addSecurityItem(new SecurityRequirement().addList("bearerAuth")).components(new Components().addSecuritySchemes("bearerAuth", new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT").name("Authorization").in(SecurityScheme.In.HEADER)));
+    return new OpenAPI()
+            .info(new Info()
+                    .title("Bite Homework API")
+                    .version("0.1")
+                    .description("simple CRUD for posting and getting tasks"))
+            .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+            .components(new Components()
+                    .addSecuritySchemes("bearerAuth", new SecurityScheme()
+                            .type(SecurityScheme.Type.HTTP)
+                            .scheme("bearer")
+                            .bearerFormat("JWT")
+                            .name("Authorization")
+                            .in(SecurityScheme.In.HEADER)));
   }
 }
