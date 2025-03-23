@@ -23,9 +23,8 @@ public class UserController {
   private final UserService userService;
 
   @PostMapping("/register")
-  public ResponseEntity<UserResponse> addUser(@RequestBody UserRequest user) {
+  public ResponseEntity<UserResponse> addUser(@Valid @RequestBody UserRequest user) {
 
-    System.out.println("testEmail:" + user.email());
     UserResponse savedUser = userService.saveUser(user);
 
     return ResponseEntity.created(
@@ -37,9 +36,8 @@ public class UserController {
             .body(savedUser);
   }
 
-  // TODO: request UserRequest
   @PostMapping("/login")
-  public ResponseEntity<?> loginUser(@RequestBody UserRequest user) {
+  public ResponseEntity<?> loginUser(@Valid @RequestBody UserRequest user) {
     String token = userService.loginUser(user);
     return ResponseEntity.ok()
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)

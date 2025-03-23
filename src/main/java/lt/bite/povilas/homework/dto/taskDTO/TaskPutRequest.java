@@ -15,6 +15,11 @@ public record TaskPutRequest(
         String description,
 
         @TaskStatusValidator
-        TaskStatus status
+        String status
 ) {
+
+  // ahhhhh...
+  public TaskStatus getStatusEnum() {
+    return TaskStatus.valueOf(status);
+  }
 }

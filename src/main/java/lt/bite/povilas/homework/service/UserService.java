@@ -36,14 +36,8 @@ public class UserService {
     if (userRepository.existsByEmail(userRequest.email())) {
       throw new EmailAlreadyExistsException(userRequest.email());
     }
-    System.out.println("testEmail1:" + userRequest.email());
 
     User user = userMapper.toEntity(userRequest);
-    System.out.println("testEmail2:" + user.getEmail());
-
-//    if (user.getEmail() == null) {
-//      throw new IllegalStateException("Email cannot be null after mapping");
-//    }
 
     user.setPassword(passwordEncoder.encode(userRequest.password()));
     Role role = roleRepository.findByName("USER")

@@ -35,7 +35,7 @@ public class TaskController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<TaskResponse> updateTask(@PathVariable long id, @RequestBody TaskPutRequest taskRequest, Authentication authentication) {
+  public ResponseEntity<TaskResponse> updateTask(@PathVariable long id, @Valid @RequestBody TaskPutRequest taskRequest, Authentication authentication) {
     TaskResponse updatedTask = taskService.updateTask(id, taskRequest, authentication);
     return ResponseEntity.ok(updatedTask);
   }

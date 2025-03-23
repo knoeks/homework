@@ -7,7 +7,7 @@ import lt.bite.povilas.homework.enums.TaskStatus;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class TaskStatusValidation implements ConstraintValidator<TaskStatusValidator, TaskStatus> {
+public class TaskStatusValidation implements ConstraintValidator<TaskStatusValidator, String> {
   private Set<String> validValues;
 
   @Override
@@ -19,10 +19,10 @@ public class TaskStatusValidation implements ConstraintValidator<TaskStatusValid
   }
 
   @Override
-  public boolean isValid(TaskStatus taskStatus, ConstraintValidatorContext context) {
-    if (taskStatus == null) {
+  public boolean isValid(String value, ConstraintValidatorContext context) {
+    if (value == null || value.trim().isEmpty()) {
       return false;
     }
-    return validValues.contains(taskStatus.name());
+    return validValues.contains(value);
   }
 }

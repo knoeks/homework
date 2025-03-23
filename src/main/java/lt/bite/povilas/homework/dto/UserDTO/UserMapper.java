@@ -16,13 +16,16 @@ public class UserMapper {
   @Autowired
   public UserMapper(ModelMapper modelMapper) {
     this.modelMapper = modelMapper;
-    
+
     this.modelMapper.createTypeMap(UserRequest.class, User.class)
             .setProvider(request -> {
               UserRequest req = (UserRequest) request.getSource();
               return new User(req.email(), req.password());
             });
 
+
+    // jau geriau buciau mappines rankiniu budu negu su sita nesamone uzsiemes...
+    // vis tiek tiek pat rasymo...
     this.modelMapper.createTypeMap(User.class, UserResponse.class)
             .setProvider(request -> {
               User src = (User) request.getSource();
