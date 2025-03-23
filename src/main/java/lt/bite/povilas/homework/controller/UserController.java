@@ -1,5 +1,10 @@
 package lt.bite.povilas.homework.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lt.bite.povilas.homework.dto.UserDTO.UserRequest;
@@ -23,6 +28,12 @@ public class UserController {
   private final UserService userService;
 
   @PostMapping("/register")
+  @Operation(summary = "Register a new user", description = "Creates a new user account. No authentication required.")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "201", description = "User registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
+          @ApiResponse(responseCode = "400", description = "Invalid user data", content = @Content),
+          @ApiResponse(responseCode = "409", description = "Email already exists", content = @Content)
+  })
   public ResponseEntity<UserResponse> addUser(@Valid @RequestBody UserRequest user) {
 
     UserResponse savedUser = userService.saveUser(user);

@@ -105,21 +105,4 @@ public class SecurityConfig {
     JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
     return new NimbusJwtEncoder(jwks);
   }
-
-  @Bean
-  public OpenAPI customOpenAPI() {
-    return new OpenAPI()
-            .info(new Info()
-                    .title("Bite Homework API")
-                    .version("0.1")
-                    .description("simple CRUD for posting and getting tasks"))
-            .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-            .components(new Components()
-                    .addSecuritySchemes("bearerAuth", new SecurityScheme()
-                            .type(SecurityScheme.Type.HTTP)
-                            .scheme("bearer")
-                            .bearerFormat("JWT")
-                            .name("Authorization")
-                            .in(SecurityScheme.In.HEADER)));
-  }
 }
