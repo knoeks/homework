@@ -23,6 +23,6 @@ public class TaskStatusValidation implements ConstraintValidator<TaskStatusValid
     if (value == null || value.trim().isEmpty()) {
       return false;
     }
-    return validValues.contains(value);
+    return validValues.contains(value.toUpperCase());
   }
 }

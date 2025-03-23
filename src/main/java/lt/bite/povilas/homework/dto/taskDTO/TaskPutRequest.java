@@ -20,6 +20,6 @@ public record TaskPutRequest(
 
   // ahhhhh...
   public TaskStatus getStatusEnum() {
-    return TaskStatus.valueOf(status);
+    return TaskStatus.valueOf(status.toUpperCase());
   }
 }

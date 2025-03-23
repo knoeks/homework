@@ -14,7 +14,7 @@ public record UserRequest(
         String email,
 
         @Size(min = 8, max = 128, message = "Password must be between 8 and 128 characters")
-        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$",
+        @Pattern(regexp = "^((?=.*[\\d])(?=.*[A-Z])(?=.*[^\\w\\d\\s])|(?=.*[\\d])(?=.*[a-z])(?=.*[^\\w\\d\\s])).+$",
                 message = "Must contain at least one uppercase letter, one lowercase letter, one number and one special character")
         String password
 ) {
