@@ -14,10 +14,6 @@ A RESTful API built with Spring Boot for managing tasks and user authentication.
 - [Setup](#setup)
 - [API Endpoints](#api-endpoints)
 - [Database Schema](#database-schema)
-- [Testing](#testing)
-- [Future Improvements](#future-improvements)
-- [Contributing](#contributing)
-- [License](#license)
 
 ---
 
