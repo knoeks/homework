@@ -32,9 +32,8 @@ public class Task {
 
   private String description;
 
-  @Setter(NONE)
   @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
+  @JoinColumn(name = "user_id", nullable = false, updatable = false)
   private User user;
 
   @Setter(NONE)

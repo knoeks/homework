@@ -8,16 +8,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class User implements UserDetails {
   @Id
@@ -28,11 +24,12 @@ public class User implements UserDetails {
   @Column(nullable = false, unique = true, length = 100)
   private String email;
 
-  @Column(nullable = false, unique = true, length = 128)
+  @Column(nullable = false, length = 128)
   private String password;
 
   @Column(nullable = false, updatable = false, name = "registered_at")
   private LocalDateTime registeredAt;
+
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
@@ -43,6 +40,13 @@ public class User implements UserDetails {
   private Set<Role> roles;
 
   // TODO: make connection to tasks
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Task> tasks;
+
+  public User(String email, String password) {
+    this.email = email;
+    this.password = password;
+  }
 
   @PrePersist
   public void prePersist() {
@@ -55,7 +59,6 @@ public class User implements UserDetails {
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return roles.stream().map(item -> new SimpleGrantedAuthority("ROLE_" + item.getName())).toList();
   }
-
 
   // FIXME: shouldn't be printed the second time. fix with DTO
   @Override

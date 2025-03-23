@@ -76,8 +76,6 @@ public class SecurityConfig {
                     .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
             );
     return http.build();
-
-
   }
 
   @Bean

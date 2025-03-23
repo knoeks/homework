@@ -1,5 +1,8 @@
 package lt.bite.povilas.homework.security;
 
+import lombok.AllArgsConstructor;
+import lt.bite.povilas.homework.dto.UserDTO.UserMapper;
+import lt.bite.povilas.homework.dto.UserDTO.UserResponse;
 import lt.bite.povilas.homework.model.User;
 import lt.bite.povilas.homework.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,25 +15,15 @@ import java.util.Optional;
 
 
 @Service
+@AllArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
   private final UserService userService;
 
-  @Autowired
-  public UserDetailsServiceImpl(UserService userService) {
-    this.userService = userService;
-  }
-
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    Optional<User> foundUser = userService.findUserByEmail(username);
-
-    if (foundUser.isEmpty()) {
-      throw new UsernameNotFoundException(username);
-    }
-
-    return foundUser.get();
+    return userService.findUserByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
   }
-
 }
 

@@ -2,6 +2,8 @@ package lt.bite.povilas.homework.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lt.bite.povilas.homework.dto.UserDTO.UserRequest;
+import lt.bite.povilas.homework.dto.UserDTO.UserResponse;
 import lt.bite.povilas.homework.model.User;
 import lt.bite.povilas.homework.service.UserService;
 import org.springframework.http.HttpHeaders;
@@ -20,17 +22,16 @@ import java.util.Map;
 public class UserController {
   private final UserService userService;
 
-  // TODO: request UserRequest
   @PostMapping("/register")
-  public ResponseEntity<User> addUser(@RequestBody User user) {
+  public ResponseEntity<UserResponse> addUser(@RequestBody UserRequest user) {
 
-    // TODO: make it return UserResponse
-    User savedUser = userService.saveUser(user);
+    System.out.println("testEmail:" + user.email());
+    UserResponse savedUser = userService.saveUser(user);
 
     return ResponseEntity.created(
                     ServletUriComponentsBuilder.fromCurrentRequest()
                             .path("/{id}")
-                            .buildAndExpand(savedUser.getId())
+                            .buildAndExpand(savedUser.id())
                             .toUri()
             )
             .body(savedUser);
@@ -38,16 +39,10 @@ public class UserController {
 
   // TODO: request UserRequest
   @PostMapping("/login")
-  public ResponseEntity<?> loginUser(@RequestBody User user) {
+  public ResponseEntity<?> loginUser(@RequestBody UserRequest user) {
     String token = userService.loginUser(user);
     return ResponseEntity.ok()
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
             .body(Map.of("success", true));
   }
-
-  @GetMapping
-  public ResponseEntity<List<User>> getUsers() {
-    return ResponseEntity.ok(userService.findAllUsers());
-  }
-
 }
