@@ -16,6 +16,18 @@ public class UserMapper {
   @Autowired
   public UserMapper(ModelMapper modelMapper) {
     this.modelMapper = modelMapper;
+    
+    this.modelMapper.createTypeMap(UserRequest.class, User.class)
+            .setProvider(request -> {
+              UserRequest req = (UserRequest) request.getSource();
+              return new User(req.email(), req.password());
+            });
+
+    this.modelMapper.createTypeMap(User.class, UserResponse.class)
+            .setProvider(request -> {
+              User src = (User) request.getSource();
+              return new UserResponse(src.getId(), src.getEmail(), src.getRegisteredAt(), src.getRoles());
+            });
   }
 
 //  @PostConstruct
