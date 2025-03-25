@@ -53,7 +53,7 @@ public class SecurityConfig {
             .authorizeHttpRequests((authorize) ->
                     authorize
                             .requestMatchers("/h2-console/**").permitAll()
-                            .requestMatchers("/", "/error", "/csrf", "/swagger-ui.html", "/swagger-ui/**",
+                            .requestMatchers("/", "/error", "/swagger-resources/**", "/csrf", "/swagger-ui.html", "/swagger-ui/**",
                                     "/v3/api-docs", "/v3/api-docs/**").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/users/login").permitAll()
