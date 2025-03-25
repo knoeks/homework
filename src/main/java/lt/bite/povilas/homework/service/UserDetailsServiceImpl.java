@@ -1,19 +1,13 @@
-package lt.bite.povilas.homework.security;
+package lt.bite.povilas.homework.service;
 
 import lombok.AllArgsConstructor;
-import lt.bite.povilas.homework.dto.UserDTO.UserMapper;
-import lt.bite.povilas.homework.dto.UserDTO.UserResponse;
-import lt.bite.povilas.homework.model.User;
-import lt.bite.povilas.homework.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
-
+// TODO: move to service
 @Service
 @AllArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {

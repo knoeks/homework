@@ -1,9 +1,8 @@
-package lt.bite.povilas.homework.validation;
+package lt.bite.povilas.homework.exception.core;
 
-import lt.bite.povilas.homework.exception.EmailAlreadyExistsException;
-import lt.bite.povilas.homework.exception.InvalidCredentialsException;
-import lt.bite.povilas.homework.exception.NotFoundException;
-import lt.bite.povilas.homework.exception.UnauthorizedEventAccessException;
+import lt.bite.povilas.homework.exception.auth.EmailAlreadyExistsException;
+import lt.bite.povilas.homework.exception.auth.InvalidCredentialsException;
+import lt.bite.povilas.homework.exception.auth.UnauthorizedEventAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

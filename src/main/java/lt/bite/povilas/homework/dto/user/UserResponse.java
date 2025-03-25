@@ -1,8 +1,6 @@
-package lt.bite.povilas.homework.dto.UserDTO;
+package lt.bite.povilas.homework.dto.user;
 
-import lt.bite.povilas.homework.enums.TaskStatus;
 import lt.bite.povilas.homework.model.Role;
-import lt.bite.povilas.homework.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Set;

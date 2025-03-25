@@ -1,9 +1,9 @@
-package lt.bite.povilas.homework.dto.taskDTO;
+package lt.bite.povilas.homework.dto.task;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record TaskPostRequest(
+public record TaskCreateRequest(
         @NotBlank(message = "Name must not be blank")
         @Size(min = 1, max = 100, message = "Name must be between 1 and 100 characters")
         String name,

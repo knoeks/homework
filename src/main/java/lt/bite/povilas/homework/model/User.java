@@ -1,14 +1,18 @@
 package lt.bite.povilas.homework.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -39,7 +43,6 @@ public class User implements UserDetails {
   )
   private Set<Role> roles;
 
-  // TODO: make connection to tasks
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<Task> tasks;
 
@@ -60,7 +63,6 @@ public class User implements UserDetails {
     return roles.stream().map(item -> new SimpleGrantedAuthority("ROLE_" + item.getName())).toList();
   }
 
-  // FIXME: shouldn't be printed the second time. fix with DTO
   @Override
   public String getUsername() {
     return email;

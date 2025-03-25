@@ -2,13 +2,14 @@ package lt.bite.povilas.homework.service;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lt.bite.povilas.homework.dto.taskDTO.TaskPostRequest;
-import lt.bite.povilas.homework.dto.taskDTO.TaskPutRequest;
-import lt.bite.povilas.homework.dto.taskDTO.TaskResponse;
+import lt.bite.povilas.homework.dto.task.TaskCreateRequest;
+import lt.bite.povilas.homework.dto.task.TaskEditRequest;
+import lt.bite.povilas.homework.dto.task.TaskResponse;
 import lt.bite.povilas.homework.enums.TaskStatus;
-import lt.bite.povilas.homework.exception.TaskNotFoundException;
-import lt.bite.povilas.homework.exception.UnauthorizedEventAccessException;
-import lt.bite.povilas.homework.exception.UserNotFoundException;
+import lt.bite.povilas.homework.exception.task.TaskNotFoundException;
+import lt.bite.povilas.homework.exception.auth.UnauthorizedEventAccessException;
+import lt.bite.povilas.homework.exception.user.UserNotFoundException;
+import lt.bite.povilas.homework.mapper.TaskMapper;
 import lt.bite.povilas.homework.model.Task;
 import lt.bite.povilas.homework.model.User;
 import lt.bite.povilas.homework.repository.TaskRepository;
@@ -17,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import lt.bite.povilas.homework.mapper.TaskMapper;
 
 import java.util.List;
 
@@ -29,14 +29,8 @@ public class TaskService {
   private final TaskMapper taskMapper;
   private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
-  private void verifyTaskOwnership(Task task, String currentEmail, long taskId) {
-    if (!task.getUser().getEmail().equals(currentEmail)) {
-      throw new UnauthorizedEventAccessException(String.valueOf(taskId));
-    }
-  }
-
   @Transactional
-  public TaskResponse saveTask(TaskPostRequest taskRequest, Authentication authentication) {
+  public TaskResponse saveTask(TaskCreateRequest taskRequest, Authentication authentication) {
     logger.info("Saving task for user: {}", authentication.getName());
     User user = userRepository.findByEmail(authentication.getName())
             .orElseThrow(() -> new UserNotFoundException(authentication.getName()));
@@ -48,9 +42,13 @@ public class TaskService {
     return response;
   }
 
+
+  // TODO: username
   public TaskResponse findTaskById(long id, Authentication authentication) {
     Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(String.valueOf(id)));
 
+
+    // TODO: pakeist kad username paduot
     verifyTaskOwnership(task, authentication.getName(), id);
 
     return taskMapper.toResponse(task);
@@ -64,7 +62,7 @@ public class TaskService {
   }
 
   @Transactional
-  public TaskResponse updateTask(long taskId, TaskPutRequest taskRequest, Authentication authentication) {
+  public TaskResponse updateTask(long taskId, TaskEditRequest taskRequest, Authentication authentication) {
     Task taskFromDb = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(String.valueOf(taskId)));
 
     verifyTaskOwnership(taskFromDb, authentication.getName(), taskId);
@@ -83,7 +81,9 @@ public class TaskService {
     return taskMapper.toResponse(taskRepository.save(task));
   }
 
-  public List<TaskResponse> findAllTasks() {
-    return taskMapper.toResponseList(taskRepository.findAll());
+  private void verifyTaskOwnership(Task task, String currentEmail, long taskId) {
+    if (!task.getUser().getEmail().equals(currentEmail)) {
+      throw new UnauthorizedEventAccessException(String.valueOf(taskId));
+    }
   }
 }

@@ -1,4 +1,4 @@
-package lt.bite.povilas.homework.exception;
+package lt.bite.povilas.homework.exception.auth;
 
 public class EmailAlreadyExistsException extends RuntimeException {
   public EmailAlreadyExistsException(String message) {

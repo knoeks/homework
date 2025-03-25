@@ -1,14 +1,12 @@
 package lt.bite.povilas.homework.mapper;
 
 import lombok.AllArgsConstructor;
-import lt.bite.povilas.homework.dto.UserDTO.UserMapper;
-import lt.bite.povilas.homework.dto.UserDTO.UserResponse;
-import lt.bite.povilas.homework.dto.taskDTO.TaskPostRequest;
-import lt.bite.povilas.homework.dto.taskDTO.TaskPutRequest;
-import lt.bite.povilas.homework.dto.taskDTO.TaskResponse;
+import lt.bite.povilas.homework.dto.task.TaskCreateRequest;
+import lt.bite.povilas.homework.dto.task.TaskEditRequest;
+import lt.bite.povilas.homework.dto.task.TaskResponse;
+import lt.bite.povilas.homework.dto.user.UserMapper;
+import lt.bite.povilas.homework.dto.user.UserResponse;
 import lt.bite.povilas.homework.model.Task;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,7 +19,7 @@ import java.util.List;
 public class TaskMapper {
   private final UserMapper userMapper;
 
-  public Task toEntity(TaskPostRequest dto) {
+  public Task toEntity(TaskCreateRequest dto) {
     if (dto == null) {
       throw new IllegalArgumentException("TaskPostRequest cannot be null");
     }
@@ -31,7 +29,7 @@ public class TaskMapper {
     return task;
   }
 
-  public void updateEntity(TaskPutRequest dto, Task task) {
+  public void updateEntity(TaskEditRequest dto, Task task) {
     if (dto == null || task == null) {
       throw new IllegalArgumentException("TaskPutRequest or Task cannot be null");
     }
@@ -49,7 +47,6 @@ public class TaskMapper {
             task.getId(),
             task.getName(),
             task.getDescription(),
-            userResponse,
             task.getStatus(),
             task.getCreatedAt()
     );

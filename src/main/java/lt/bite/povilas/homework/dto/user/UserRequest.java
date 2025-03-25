@@ -1,11 +1,9 @@
-package lt.bite.povilas.homework.dto.UserDTO;
+package lt.bite.povilas.homework.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lt.bite.povilas.homework.enums.TaskStatus;
-import lt.bite.povilas.homework.model.User;
 
 public record UserRequest(
         @NotBlank(message = "Email must not be blank")

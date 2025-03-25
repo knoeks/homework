@@ -1,21 +1,19 @@
 package lt.bite.povilas.homework.service;
 
 import lombok.AllArgsConstructor;
-import lt.bite.povilas.homework.dto.UserDTO.UserMapper;
-import lt.bite.povilas.homework.dto.UserDTO.UserRequest;
-import lt.bite.povilas.homework.dto.UserDTO.UserResponse;
-import lt.bite.povilas.homework.exception.EmailAlreadyExistsException;
-import lt.bite.povilas.homework.exception.InvalidCredentialsException;
-import lt.bite.povilas.homework.exception.RoleNotFoundException;
+import lt.bite.povilas.homework.dto.user.UserMapper;
+import lt.bite.povilas.homework.dto.user.UserRequest;
+import lt.bite.povilas.homework.dto.user.UserResponse;
+import lt.bite.povilas.homework.exception.auth.EmailAlreadyExistsException;
+import lt.bite.povilas.homework.exception.auth.InvalidCredentialsException;
+import lt.bite.povilas.homework.exception.user.RoleNotFoundException;
 import lt.bite.povilas.homework.model.Role;
 import lt.bite.povilas.homework.model.User;
 import lt.bite.povilas.homework.repository.RoleRepository;
 import lt.bite.povilas.homework.repository.UserRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

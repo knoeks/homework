@@ -1,4 +1,6 @@
-package lt.bite.povilas.homework.exception;
+package lt.bite.povilas.homework.exception.user;
+
+import lt.bite.povilas.homework.exception.core.NotFoundException;
 
 public class UserNotFoundException extends NotFoundException {
   public UserNotFoundException(String message) {

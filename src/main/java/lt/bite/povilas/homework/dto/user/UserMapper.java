@@ -1,9 +1,5 @@
-package lt.bite.povilas.homework.dto.UserDTO;
+package lt.bite.povilas.homework.dto.user;
 
-import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
-import lt.bite.povilas.homework.dto.UserDTO.UserRequest;
-import lt.bite.povilas.homework.dto.UserDTO.UserResponse;
 import lt.bite.povilas.homework.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +28,6 @@ public class UserMapper {
               return new UserResponse(src.getId(), src.getEmail(), src.getRegisteredAt(), src.getRoles());
             });
   }
-
-//  @PostConstruct
-//  public void init() {
-//    this.modelMapper.createTypeMap(UserRequest.class, User.class)
-//            .setProvider(request -> {
-//              UserRequest req = (UserRequest) request.getSource();
-//              return new User(req.email(), req.password());
-//            });
-//  }
 
   public User toEntity(UserRequest dto) {
     return modelMapper.map(dto, User.class);
