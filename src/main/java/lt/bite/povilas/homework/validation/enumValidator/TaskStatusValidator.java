@@ -1,4 +1,4 @@
-package lt.bite.povilas.homework.validation.EnumValidator;
+package lt.bite.povilas.homework.validation.enumValidator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

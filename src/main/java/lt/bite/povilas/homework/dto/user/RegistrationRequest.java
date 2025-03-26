@@ -1,11 +1,13 @@
 package lt.bite.povilas.homework.dto.user;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record UserRequest(
+@Schema(description = "Request body for user registration")
+public record RegistrationRequest(
         @NotBlank(message = "Email must not be blank")
         @Email(message = "Email must be a valid email address")
         @Size(max = 100, message = "Email must not exceed 100 characters")

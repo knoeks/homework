@@ -39,15 +39,15 @@ public class Task {
   @Column(nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
-  @PrePersist
-  public void prePersist() {
-    this.createdAt = LocalDateTime.now();
-  }
-
   public Task(String name, String description, User user) {
     this.name = name;
     this.description = description;
     this.user = user;
+  }
+
+  @PrePersist
+  public void prePersist() {
+    this.createdAt = LocalDateTime.now();
   }
 
   public void setStatus(TaskStatus status) {

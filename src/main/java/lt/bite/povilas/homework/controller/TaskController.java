@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lt.bite.povilas.homework.dto.task.TaskCreateRequest;
@@ -15,7 +16,8 @@ import lt.bite.povilas.homework.dto.task.TaskEditRequest;
 import lt.bite.povilas.homework.dto.task.TaskResponse;
 import lt.bite.povilas.homework.enums.TaskStatus;
 import lt.bite.povilas.homework.service.TaskService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -52,19 +54,21 @@ public class TaskController {
                   description = "Unauthorized - Invalid or missing token",
                   content = @Content)
   })
-  public ResponseEntity<TaskResponse> addTask(
+  @ResponseStatus(HttpStatus.CREATED)
+  public TaskResponse addTask(
           @Valid @RequestBody TaskCreateRequest taskRequest,
-          Authentication authentication
-  ) {
+          Authentication authentication,
+          HttpServletResponse response) {
 
     TaskResponse savedTask = taskService.saveTask(taskRequest, authentication.getName());
 
-    return ResponseEntity.created(
+    response.setHeader(HttpHeaders.LOCATION,
             ServletUriComponentsBuilder.fromCurrentRequest()
                     .path("/{id}")
                     .buildAndExpand(savedTask.id())
-                    .toUri()
-    ).body(savedTask);
+                    .toUri().toString());
+
+    return savedTask;
   }
 
   @PutMapping("/{id}")
@@ -94,17 +98,14 @@ public class TaskController {
                   description = "Task not found",
                   content = @Content)
   })
-  // @ResponseStatus
-  public ResponseEntity<TaskResponse> updateTask(
+  @ResponseStatus(HttpStatus.OK)
+  public TaskResponse updateTask(
           @Parameter(description = "ID of the task to update", required = true)
           @PathVariable long id,
           @Valid @RequestBody TaskEditRequest taskRequest,
           Authentication authentication) {
 
-    TaskResponse updatedTask = taskService.updateTask(id, taskRequest, authentication.getName());
-
-
-    return ResponseEntity.ok(updatedTask);
+    return taskService.updateTask(id, taskRequest, authentication.getName());
   }
 
   @PutMapping("/{id}/cycle-status")
@@ -130,13 +131,13 @@ public class TaskController {
                   description = "Task not found",
                   content = @Content)
   })
-  public ResponseEntity<TaskResponse> updateTask(
+  @ResponseStatus(HttpStatus.OK)
+  public TaskResponse updateTask(
           @Parameter(description = "ID of the task to cycle status for", required = true)
           @PathVariable long id,
           Authentication authentication) {
-    TaskResponse updatedTask = taskService.cycleStatus(id, authentication.getName());
 
-    return ResponseEntity.ok(updatedTask);
+    return taskService.cycleStatus(id, authentication.getName());
   }
 
   @GetMapping("/{id}")
@@ -163,14 +164,13 @@ public class TaskController {
                   description = "Task not found",
                   content = @Content)
   })
-  public ResponseEntity<TaskResponse> getTask(
+  @ResponseStatus(HttpStatus.OK)
+  public TaskResponse getTask(
           @Parameter(description = "ID of the task to retrieve", required = true)
           @PathVariable long id,
           Authentication authentication) {
 
-    TaskResponse taskFromDb = taskService.findTaskById(id, authentication.getName());
-
-    return ResponseEntity.ok(taskFromDb);
+    return taskService.findTaskById(id, authentication.getName());
   }
 
   @GetMapping
@@ -192,13 +192,12 @@ public class TaskController {
                           description = "Unauthorized - Invalid or missing token",
                           content = @Content)
           })
-  public ResponseEntity<List<TaskResponse>> getTaskByStatus(
+  @ResponseStatus(HttpStatus.OK)
+  public List<TaskResponse> getTaskByStatus(
           @RequestParam
           TaskStatus status,
           Authentication authentication) {
 
-    List<TaskResponse> tasks = taskService.findTasksByStatus(status, authentication);
-
-    return ResponseEntity.ok(tasks);
+    return taskService.findTasksByStatus(status, authentication.getName());
   }
 }

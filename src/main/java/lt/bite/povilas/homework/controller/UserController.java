@@ -5,20 +5,18 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lt.bite.povilas.homework.dto.user.UserRequest;
-import lt.bite.povilas.homework.dto.user.UserResponse;
+import lt.bite.povilas.homework.dto.user.LoginRequest;
+import lt.bite.povilas.homework.dto.user.LoginResponse;
+import lt.bite.povilas.homework.dto.user.RegistrationRequest;
+import lt.bite.povilas.homework.dto.user.RegistrationResponse;
 import lt.bite.povilas.homework.service.UserService;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -36,7 +34,7 @@ public class UserController {
                   description = "User registered successfully",
                   content = @Content(
                           mediaType = "application/json",
-                          schema = @Schema(implementation = UserResponse.class))),
+                          schema = @Schema(implementation = RegistrationResponse.class))),
           @ApiResponse(
                   responseCode = "400",
                   description = "Invalid user data",
@@ -46,28 +44,33 @@ public class UserController {
                   description = "Email already exists",
                   content = @Content)
   })
-  public ResponseEntity<UserResponse> addUser(
-          @Valid @RequestBody UserRequest user) {
+  @ResponseStatus(HttpStatus.CREATED)
+  public RegistrationResponse addUser(
+          @Valid @RequestBody RegistrationRequest user,
+          HttpServletResponse response) {
 
-    UserResponse savedUser = userService.saveUser(user);
+    RegistrationResponse savedUser = userService.saveUser(user);
 
-    return ResponseEntity.created(
-                    ServletUriComponentsBuilder.fromCurrentRequest()
-                            .path("/{id}")
-                            .buildAndExpand(savedUser.id())
-                            .toUri()
-            )
-            .body(savedUser);
+    response.setHeader(HttpHeaders.LOCATION,
+            ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(savedUser.id())
+                    .toUri()
+                    .toString());
+
+    return savedUser;
   }
 
+  @ResponseStatus(HttpStatus.OK)
   @PostMapping("/login")
-  public ResponseEntity<Map<String, Boolean>> loginUser(
-          @Valid @RequestBody UserRequest user) {
+  public LoginResponse loginUser(
+          @Valid @RequestBody LoginRequest user,
+          HttpServletResponse response) {
 
     String token = userService.loginUser(user);
 
-    return ResponseEntity.ok()
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-            .body(Map.of("success", true));
+    response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+
+    return new LoginResponse(true);
   }
 }

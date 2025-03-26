@@ -1,9 +1,10 @@
 package lt.bite.povilas.homework.service;
 
 import lombok.AllArgsConstructor;
+import lt.bite.povilas.homework.dto.user.LoginRequest;
+import lt.bite.povilas.homework.dto.user.RegistrationRequest;
+import lt.bite.povilas.homework.dto.user.RegistrationResponse;
 import lt.bite.povilas.homework.dto.user.UserMapper;
-import lt.bite.povilas.homework.dto.user.UserRequest;
-import lt.bite.povilas.homework.dto.user.UserResponse;
 import lt.bite.povilas.homework.exception.auth.EmailAlreadyExistsException;
 import lt.bite.povilas.homework.exception.auth.InvalidCredentialsException;
 import lt.bite.povilas.homework.exception.user.RoleNotFoundException;
@@ -30,14 +31,14 @@ public class UserService {
     return userRepository.findByEmail(email);
   }
 
-  public UserResponse saveUser(UserRequest userRequest) {
-    if (userRepository.existsByEmail(userRequest.email())) {
-      throw new EmailAlreadyExistsException(userRequest.email());
+  public RegistrationResponse saveUser(RegistrationRequest registrationRequest) {
+    if (userRepository.existsByEmail(registrationRequest.email())) {
+      throw new EmailAlreadyExistsException(registrationRequest.email());
     }
 
-    User user = userMapper.toEntity(userRequest);
+    User user = userMapper.toEntity(registrationRequest);
 
-    user.setPassword(passwordEncoder.encode(userRequest.password()));
+    user.setPassword(passwordEncoder.encode(registrationRequest.password()));
     Role role = roleRepository.findByName("USER")
             .orElseThrow(() -> new RoleNotFoundException("USER"));
 
@@ -45,11 +46,11 @@ public class UserService {
     return userMapper.toResponse(userRepository.save(user));
   }
 
-  public String loginUser(UserRequest userRequest) {
-    User userFromDb = userRepository.findByEmail(userRequest.email())
+  public String loginUser(LoginRequest loginRequest) {
+    User userFromDb = userRepository.findByEmail(loginRequest.email())
             .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password."));
 
-    if (!passwordEncoder.matches(userRequest.password(), userFromDb.getPassword())) {
+    if (!passwordEncoder.matches(loginRequest.password(), userFromDb.getPassword())) {
       throw new InvalidCredentialsException("Invalid email or password");
     }
 

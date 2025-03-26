@@ -5,7 +5,7 @@ import lt.bite.povilas.homework.model.Role;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-public record UserResponse(
+public record RegistrationResponse(
         long id,
         String email,
         LocalDateTime registeredAt,

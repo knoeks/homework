@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lt.bite.povilas.homework.dto.task.TaskCreateRequest;
 import lt.bite.povilas.homework.dto.task.TaskEditRequest;
 import lt.bite.povilas.homework.dto.task.TaskResponse;
+import lt.bite.povilas.homework.dto.user.RegistrationResponse;
 import lt.bite.povilas.homework.dto.user.UserMapper;
-import lt.bite.povilas.homework.dto.user.UserResponse;
 import lt.bite.povilas.homework.model.Task;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +42,7 @@ public class TaskMapper {
     if (task == null) {
       throw new IllegalArgumentException("Task cannot be null");
     }
-    UserResponse userResponse = userMapper.toResponse(task.getUser());
+    RegistrationResponse registrationResponse = userMapper.toResponse(task.getUser());
     return new TaskResponse(
             task.getId(),
             task.getName(),

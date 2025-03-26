@@ -13,27 +13,27 @@ public class UserMapper {
   public UserMapper(ModelMapper modelMapper) {
     this.modelMapper = modelMapper;
 
-    this.modelMapper.createTypeMap(UserRequest.class, User.class)
+    this.modelMapper.createTypeMap(RegistrationRequest.class, User.class)
             .setProvider(request -> {
-              UserRequest req = (UserRequest) request.getSource();
+              RegistrationRequest req = (RegistrationRequest) request.getSource();
               return new User(req.email(), req.password());
             });
 
 
     // jau geriau buciau mappines rankiniu budu negu su sita nesamone uzsiemes...
     // vis tiek tiek pat rasymo...
-    this.modelMapper.createTypeMap(User.class, UserResponse.class)
+    this.modelMapper.createTypeMap(User.class, RegistrationResponse.class)
             .setProvider(request -> {
               User src = (User) request.getSource();
-              return new UserResponse(src.getId(), src.getEmail(), src.getRegisteredAt(), src.getRoles());
+              return new RegistrationResponse(src.getId(), src.getEmail(), src.getRegisteredAt(), src.getRoles());
             });
   }
 
-  public User toEntity(UserRequest dto) {
+  public User toEntity(RegistrationRequest dto) {
     return modelMapper.map(dto, User.class);
   }
 
-  public UserResponse toResponse(User user) {
-    return modelMapper.map(user, UserResponse.class);
+  public RegistrationResponse toResponse(User user) {
+    return modelMapper.map(user, RegistrationResponse.class);
   }
 }
