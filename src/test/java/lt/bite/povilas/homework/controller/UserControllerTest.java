@@ -39,19 +39,22 @@ public class UserControllerTest {
 
   // happy path
   @Test
-  @WithMockUser
   void Given_ValidCredentials_When_LoggingIn_Then_ReturnUserWithTokenAnd200() throws Exception {
     LoginRequest loginRequest = new LoginRequest("admin@example.com", "Admin1234!");
     String token = "mock-jwt-token";
 
     when(userService.loginUser(loginRequest)).thenReturn(token);
 
-    mockMvc.perform(post("/api/users/login").contentType(MediaType.APPLICATION_JSON).content("{\"email\":\"admin@example.com\",\"password\":\"Admin1234!\"}")).andExpect(status().isOk()).andExpect(header().string(HttpHeaders.AUTHORIZATION, "Bearer " + token)).andExpect(jsonPath("$.success").value(true));
+    mockMvc.perform(post("/api/users/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"email\":\"admin@example.com\",\"password\":\"Admin1234!\"}"))
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+            .andExpect(jsonPath("$.success").value(true));
   }
 
   // unhappy path
   @Test
-  @WithMockUser
   void Given_InvalidCredentials_When_LoggingIn_Then_ReturnErrorAnd401() throws Exception {
     LoginRequest loginRequest = new LoginRequest("badlogin@example.com", "badPassword");
 
@@ -59,12 +62,17 @@ public class UserControllerTest {
 
 
     //invalid credentials probably shouldn't return validation information (either know password or don't)
-    mockMvc.perform(post("/api/users/login").contentType(MediaType.APPLICATION_JSON).content("{\"email\":\"badlogin@example.com\",\"password\":\"badPassword\"}")).andExpect(status().isUnauthorized()).andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION)).andExpect(jsonPath("$.error").value("Invalid email or password"));
+    mockMvc.perform(post("/api/users/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"email\":\"badlogin@example.com\",\"password\":\"badPassword\"}"))
+            .andExpect(status().isUnauthorized())
+            .andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
+            .andExpect(jsonPath("$.error").value("Invalid email or password"))
+            .andExpect(jsonPath("$.success").doesNotExist());
   }
 
   // happy path
   @Test
-  @WithMockUser
   void Given_ValidUserData_When_Registering_Then_ReturnUserWithLocationAnd201() throws Exception {
     RegistrationRequest registrationRequest = new RegistrationRequest("newuser@example.com", "Pass1234!");
     // fikstuotas laikas testavimui
@@ -73,18 +81,43 @@ public class UserControllerTest {
 
     when(userService.saveUser(registrationRequest)).thenReturn(registrationResponse);
 
-    mockMvc.perform(post("/api/users/register").contentType(MediaType.APPLICATION_JSON).content("{\"email\":\"newuser@example.com\",\"password\":\"Pass1234!\"}")).andExpect(status().isCreated()).andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/api/users/register/1")).andExpect(jsonPath("$.id").value(1L)).andExpect(jsonPath("$.email").value("newuser@example.com")).andExpect(jsonPath("$.registeredAt").exists()).andExpect(jsonPath("$.registeredAt").isString()).andExpect(jsonPath("$.registeredAt").value(MatchesPattern.matchesPattern("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))).andExpect(jsonPath("$.roles[0].id").value(1L)).andExpect(jsonPath("$.roles[0].name").value("USER"));
+    mockMvc.perform(post("/api/users/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"email\":\"newuser@example.com\",\"password\":\"Pass1234!\"}"))
+            .andExpect(status().isCreated())
+            .andExpect(header().string(HttpHeaders.LOCATION, "http://localhost/api/users/register/1"))
+            .andExpect(jsonPath("$.id").value(1L))
+            .andExpect(jsonPath("$.email").value("newuser@example.com"))
+            .andExpect(jsonPath("$.registeredAt").exists())
+            .andExpect(jsonPath("$.registeredAt").isString())
+            .andExpect(jsonPath("$.registeredAt").value(MatchesPattern.matchesPattern("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}")))
+            .andExpect(jsonPath("$.roles[0].id").value(1L))
+            .andExpect(jsonPath("$.roles[0].name").value("USER"));
   }
 
   // unhappy path
   @Test
-  @WithMockUser
   void Given_DuplicateUserEmail_When_Registering_Then_ReturnUserWithLocationAnd409() throws Exception {
     RegistrationRequest registrationRequest = new RegistrationRequest("admin@example.com", "SomePass1234!");
 
     when(userService.saveUser(registrationRequest)).thenThrow(new EmailAlreadyExistsException("admin@example.com"));
 
-    mockMvc.perform(post("/api/users/register").contentType(MediaType.APPLICATION_JSON).content("{\"email\":\"admin@example.com\",\"password\":\"SomePass1234!\"}")).andExpect(status().isConflict()).andExpect(jsonPath("$.error").value("this email already exists: admin@example.com"));
+    mockMvc.perform(post("/api/users/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"email\":\"admin@example.com\",\"password\":\"SomePass1234!\"}"))
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.error").value("this email already exists: admin@example.com"));
   }
 
+  // unhappy path
+  @Test
+  void Given_InvalidUserData_When_Registering_Then_ReturnErrorAnd400() throws Exception {
+    RegistrationRequest registrationRequest = new RegistrationRequest("admin!@example.com", "SomePass");
+
+    mockMvc.perform(post("/api/users/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"email\":\"admin!@example.com\",\"password\":\"SomePass\"}"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.password").value("Must contain at least one uppercase letter, one lowercase letter, one number and one special character"));
+  }
 }
