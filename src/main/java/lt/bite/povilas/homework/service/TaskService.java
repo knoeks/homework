@@ -30,10 +30,10 @@ public class TaskService {
   private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
   @Transactional
-  public TaskResponse saveTask(TaskCreateRequest taskRequest, Authentication authentication) {
-    logger.info("Saving task for user: {}", authentication.getName());
-    User user = userRepository.findByEmail(authentication.getName())
-            .orElseThrow(() -> new UserNotFoundException(authentication.getName()));
+  public TaskResponse saveTask(TaskCreateRequest taskRequest, String email) {
+    logger.info("Saving task for user: {}", email);
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException(email));
 
     Task task = taskMapper.toEntity(taskRequest); // Associate the user with the task
     task.setUser(user);
@@ -43,13 +43,12 @@ public class TaskService {
   }
 
 
-  // TODO: username
-  public TaskResponse findTaskById(long id, Authentication authentication) {
+  // TODO: email
+  public TaskResponse findTaskById(long id, String email) {
     Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(String.valueOf(id)));
 
-
-    // TODO: pakeist kad username paduot
-    verifyTaskOwnership(task, authentication.getName(), id);
+    // TODO: pakeist kad email paduot
+    verifyTaskOwnership(task, email, id);
 
     return taskMapper.toResponse(task);
   }
@@ -62,25 +61,26 @@ public class TaskService {
   }
 
   @Transactional
-  public TaskResponse updateTask(long taskId, TaskEditRequest taskRequest, Authentication authentication) {
+  public TaskResponse updateTask(long taskId, TaskEditRequest taskRequest, String email) {
     Task taskFromDb = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(String.valueOf(taskId)));
 
-    verifyTaskOwnership(taskFromDb, authentication.getName(), taskId);
+    verifyTaskOwnership(taskFromDb, email, taskId);
 
     taskMapper.updateEntity(taskRequest, taskFromDb);
 
     return taskMapper.toResponse(taskRepository.save(taskFromDb));
   }
 
-  public TaskResponse cycleStatus(long id, Authentication authentication) {
+  public TaskResponse cycleStatus(long id, String email) {
     Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(String.valueOf(id)));
 
-    verifyTaskOwnership(task, authentication.getName(), id);
+    verifyTaskOwnership(task, email, id);
 
     task.setStatus(task.getStatus().next());
     return taskMapper.toResponse(taskRepository.save(task));
   }
 
+  // other methods always go to the end
   private void verifyTaskOwnership(Task task, String currentEmail, long taskId) {
     if (!task.getUser().getEmail().equals(currentEmail)) {
       throw new UnauthorizedEventAccessException(String.valueOf(taskId));

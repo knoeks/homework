@@ -57,7 +57,7 @@ public class TaskController {
           Authentication authentication
   ) {
 
-    TaskResponse savedTask = taskService.saveTask(taskRequest, authentication);
+    TaskResponse savedTask = taskService.saveTask(taskRequest, authentication.getName());
 
     return ResponseEntity.created(
             ServletUriComponentsBuilder.fromCurrentRequest()
@@ -101,7 +101,7 @@ public class TaskController {
           @Valid @RequestBody TaskEditRequest taskRequest,
           Authentication authentication) {
 
-    TaskResponse updatedTask = taskService.updateTask(id, taskRequest, authentication);
+    TaskResponse updatedTask = taskService.updateTask(id, taskRequest, authentication.getName());
 
 
     return ResponseEntity.ok(updatedTask);
@@ -134,8 +134,7 @@ public class TaskController {
           @Parameter(description = "ID of the task to cycle status for", required = true)
           @PathVariable long id,
           Authentication authentication) {
-
-    TaskResponse updatedTask = taskService.cycleStatus(id, authentication);
+    TaskResponse updatedTask = taskService.cycleStatus(id, authentication.getName());
 
     return ResponseEntity.ok(updatedTask);
   }
@@ -169,7 +168,7 @@ public class TaskController {
           @PathVariable long id,
           Authentication authentication) {
 
-    TaskResponse taskFromDb = taskService.findTaskById(id, authentication);
+    TaskResponse taskFromDb = taskService.findTaskById(id, authentication.getName());
 
     return ResponseEntity.ok(taskFromDb);
   }
